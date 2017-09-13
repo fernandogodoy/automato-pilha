@@ -76,14 +76,14 @@ public class AutomatoPilhaImpl implements AutomatoPilha {
 		return map;
 	}
 
-	private void empilhar(List<String> primeiraParte, String estado) {
-		primeiraParte.stream()
+	private void empilhar(List<String> simbolos, String estado) {
+		simbolos.stream()
 			.filter(simbolo -> ALFABETO.contains(simbolo))
 			.forEach(pilha::push);
 	}
 
-	private void desempilhar(List<String> segundaParte, String estado) {
-		segundaParte.stream()
+	private void desempilhar(List<String> simbolos, String estado) {
+		simbolos.stream()
 				.filter(simbolo -> ALFABETO.contains(simbolo))
 				.filter(simbolo -> StringUtils.contains(estado, simbolo))
 				.forEach(item -> pilha.pop());
