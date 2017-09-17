@@ -16,5 +16,7 @@ public interface AutomatoPilha {
 	List<String> getEstados();
 
 	Boolean getEstadoExecucao();
+	
+	Boolean isValidSize();
 
 }

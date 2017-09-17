@@ -33,10 +33,8 @@ public class AutomatoPilhaImpl implements AutomatoPilha {
 	public AutomatoPilhaImpl(String palavra) {
 		pilha.push(FUNDO_PILHA);
 		this.characters = AutomatoUtil.toList(palavra);
-		this.estados = Stream.iterate(0, size -> ++size)
-				.map(size -> String.format("q%s", size))
-				.limit(characters.size())
-				.collect(Collectors.toCollection(LinkedList::new));
+		this.estados = Stream.iterate(0, size -> ++size).map(size -> String.format("q%s", size))
+				.limit(characters.size()).collect(Collectors.toCollection(LinkedList::new));
 	}
 
 	@Override
@@ -66,28 +64,27 @@ public class AutomatoPilhaImpl implements AutomatoPilha {
 	}
 
 	private Map<String, List<String>> divideLista() {
-		Map<String, List<String>> map = new HashMap<>();
-		map.put(PRIMEIRA_PARTE, AutomatoUtil.getFirstHalf(characters));
-		map.put(SEGUNDA_PARTE, AutomatoUtil.getSecondHalf(characters));
-
-		if (map.get(PRIMEIRA_PARTE).size() != map.get(SEGUNDA_PARTE).size()) {
+		if (!isValidSize()) {
 			throw new AutomatoPilhaException();
 		}
 
+		Map<String, List<String>> map = new HashMap<>();
+		map.put(PRIMEIRA_PARTE, AutomatoUtil.getFirstHalf(characters));
+		map.put(SEGUNDA_PARTE, AutomatoUtil.getSecondHalf(characters));
 		return map;
 	}
 
+	public Boolean isValidSize() {
+		return characters.size() % 2 == 0;
+	}
+
 	private void empilhar(List<String> simbolos, String estado) {
-		simbolos.stream()
-			.filter(simbolo -> alfabeto.contains(simbolo))
-			.forEach(pilha::push);
+		simbolos.stream().filter(simbolo -> alfabeto.contains(simbolo)).forEach(pilha::push);
 	}
 
 	private void desempilhar(List<String> simbolos, String estado) {
-		simbolos.stream()
-				.filter(simbolo -> alfabeto.contains(simbolo))
-				.filter(simbolo -> StringUtils.contains(estado, simbolo))
-				.forEach(item -> pilha.pop());
+		simbolos.stream().filter(simbolo -> alfabeto.contains(simbolo))
+				.filter(simbolo -> StringUtils.contains(estado, simbolo)).forEach(item -> pilha.pop());
 		descarregarPilha();
 	}
 

@@ -40,9 +40,10 @@ enum EstadoTransicao {
 	public abstract Estado getInstance();
 
 	public static EstadoTransicao getCurrent(Integer current, String palavra) {
-		List<String> primeiraMetade = AutomatoUtil.getFirstHalf(AutomatoUtil.toList(palavra));
-		Integer currentPosition = (primeiraMetade.size() - current);
-		if (currentPosition == primeiraMetade.size()) {
+		List<String> firstHalf = AutomatoUtil.getFirstHalf(AutomatoUtil.toList(palavra));
+		Integer currentPosition = (firstHalf.size() - current);
+	
+		if (currentPosition == firstHalf.size()) {
 			return EstadoTransicao.INICIAL;
 		} else if (currentPosition >= 0) {
 			return EstadoTransicao.INTERMEDIARIO;
