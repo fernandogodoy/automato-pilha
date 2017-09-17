@@ -13,25 +13,26 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import br.uem.automatopilha.observer.Observer;
+import br.uem.automatopilha.view.util.AutomatoUtil;
 
 public class AutomatoPilhaImpl implements AutomatoPilha {
 
 	private Boolean estadoExecucao;
-	private Observer observer = new Observer(this);
+	private final Observer observer = new Observer(this);
 
 	private static final String FUNDO_PILHA = "#";
 	private static final String SEGUNDA_PARTE = "SEGUNDA_PARTE";
 	private static final String PRIMEIRA_PARTE = "PRIMEIRA_PARTE";
 
-	private static final List<String> ALFABETO = Arrays.asList("0", "1");
+	private static final List<String> alfabeto = Arrays.asList("0", "1");
 
-	private List<String> characters;
-	private List<String> estados;
-	private Stack<String> pilha = new Stack<>();
+	private final List<String> characters;
+	private final List<String> estados;
+	private final Stack<String> pilha = new Stack<>();
 
 	public AutomatoPilhaImpl(String palavra) {
 		pilha.push(FUNDO_PILHA);
-		this.characters = new LinkedList<>(Arrays.asList(palavra.split("\\B")));
+		this.characters = AutomatoUtil.toList(palavra);
 		this.estados = Stream.iterate(0, size -> ++size)
 				.map(size -> String.format("q%s", size))
 				.limit(characters.size())
@@ -40,11 +41,11 @@ public class AutomatoPilhaImpl implements AutomatoPilha {
 
 	@Override
 	public Boolean run() {
-		start();
+		execute();
 		return getEstadoExecucao();
 	}
 
-	private void start() {
+	private void execute() {
 		try {
 			Map<String, List<String>> map = divideLista();
 			Iterator<String> iterator = estados.stream().iterator();
@@ -66,8 +67,8 @@ public class AutomatoPilhaImpl implements AutomatoPilha {
 
 	private Map<String, List<String>> divideLista() {
 		Map<String, List<String>> map = new HashMap<>();
-		map.put(PRIMEIRA_PARTE, characters.subList(0, characters.size() / 2));
-		map.put(SEGUNDA_PARTE, characters.subList(characters.size() / 2, characters.size()));
+		map.put(PRIMEIRA_PARTE, AutomatoUtil.getFirstHalf(characters));
+		map.put(SEGUNDA_PARTE, AutomatoUtil.getSecondHalf(characters));
 
 		if (map.get(PRIMEIRA_PARTE).size() != map.get(SEGUNDA_PARTE).size()) {
 			throw new AutomatoPilhaException();
@@ -78,13 +79,13 @@ public class AutomatoPilhaImpl implements AutomatoPilha {
 
 	private void empilhar(List<String> simbolos, String estado) {
 		simbolos.stream()
-			.filter(simbolo -> ALFABETO.contains(simbolo))
+			.filter(simbolo -> alfabeto.contains(simbolo))
 			.forEach(pilha::push);
 	}
 
 	private void desempilhar(List<String> simbolos, String estado) {
 		simbolos.stream()
-				.filter(simbolo -> ALFABETO.contains(simbolo))
+				.filter(simbolo -> alfabeto.contains(simbolo))
 				.filter(simbolo -> StringUtils.contains(estado, simbolo))
 				.forEach(item -> pilha.pop());
 		descarregarPilha();
